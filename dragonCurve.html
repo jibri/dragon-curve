@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<button onclick="javascript:plusL()">plus lignes</button>
+<button onclick="javascript:moinsL()">moins lignes</button>
+<button onclick="javascript:plusC()">plus cercles</button>
+<button onclick="javascript:moinsC()">moins cercles</button>
+<br />
+<canvas id="myCanvas" width="2000" height="1500"></canvas>
+<script src="dragonCurve.js"></script>
+<script>
+    const startX = 400
+    const startY = 700
+    let iterationsAsk = 1
+
+    let canvas = document.getElementById("myCanvas")
+    let ctx = canvas.getContext("2d")
+    ctx.fillStyle = "#FF0000"
+
+    const drawLines = iterations => {
+        console.log(`draw lines for ${iterations}`)
+        // Use the identity matrix while clearing the canvas
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.translate(startX, startY)
+        ctx.rotate(-iterations * Math.PI / 4)
+
+        const curve = getCurve(iterations)
+        const lineSize = 1000 / Math.pow(2, iterations / 2)
+
+        ctx.beginPath()
+        ctx.moveTo(0, 0)
+        ctx.lineTo(lineSize, 0)
+        ctx.translate(lineSize, 0)
+        for (let i = 0; i < curve.length; i++) {
+            ctx.moveTo(0, 0)
+            if (curve[i] === 1) ctx.rotate(Math.PI / 2)
+            else ctx.rotate(-Math.PI / 2)
+            ctx.lineTo(lineSize, 0)
+            ctx.translate(lineSize, 0)
+        }
+        ctx.stroke()
+    }
+
+    const drawCircles = iterations => {
+        console.log(`draw circles for ${iterations}`)
+        // Use the identity matrix while clearing the canvas
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.translate(startX, startY)
+        ctx.rotate(-iterations * Math.PI / 4)
+
+        const curve = getCurve(iterations)
+        const radius = 500 / Math.pow(2, iterations / 2)
+
+        ctx.beginPath()
+        ctx.moveTo(0, 0)
+        ctx.lineTo(radius, 0)
+        ctx.translate(radius, 0)
+        window.requestAnimationFrame(drawCurves(curve, radius, 0));
+    }
+
+    const drawCurves = (curve, radius, index) => () => {
+
+        if (index >= curve.length) {
+            ctx.lineTo(radius, 0)
+            ctx.stroke()
+            return
+        }
+
+        const batchLength = Math.ceil(curve.length / 60)
+        const nextStep = Math.min(curve.length, index + batchLength)
+        console.log(`batchLentght = ${batchLength}, curve.length = ${curve.length}, nextstep = ${nextStep}, index = ${index}`)
+        for (let i = index; i < nextStep; i++) {
+            ctx.moveTo(0, 0)
+            if (curve[i] === 1) {
+                ctx.arc(0, radius, radius, -Math.PI / 2, 0, false)
+                ctx.translate(radius, radius)
+                ctx.rotate(Math.PI / 2)
+            } else {
+                ctx.arc(0, -radius, radius, +Math.PI / 2, 0, true)
+                ctx.translate(radius, -radius)
+                ctx.rotate(-Math.PI / 2)
+            }
+        }
+
+        ctx.stroke()
+        window.requestAnimationFrame(drawCurves(curve, radius, nextStep));
+    }
+    const plusL = () => drawLines(++iterationsAsk)
+    const moinsL = () => drawLines(--iterationsAsk)
+    const plusC = () => drawCircles(++iterationsAsk)
+    const moinsC = () => drawCircles(--iterationsAsk)
+</script>
