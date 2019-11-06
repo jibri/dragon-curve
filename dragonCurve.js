@@ -2,14 +2,22 @@
 const startX = 500
 const startY = 680
 const lineBaseLength = 1000
+let cloudEffect = false
+let stop = false
 let animate = false
 let iterationsAsk = 1
 
 // Canvas
 let canvas = document.getElementById("myCanvas")
 let ctx = canvas.getContext("2d")
-ctx.strokeStyle = "#AAAAAA"
-ctx.fillStyle = "#AAAAAA"
+
+// var grad = ctx.createRadialGradient(startX, startY, 50, 750, startY, 750);
+// grad.addColorStop(0, 'rgb(200,230,255)');
+// grad.addColorStop(1, 'rgb(0,80,255)');
+ctx.strokeStyle = '#05FF05';
+// ctx.fillRect(0, 0, 2000, 1500);
+
+ctx.lineWidth = 5
 
 // Récupération des propriétés de la dragon curve
 const getCurve = (iterations) => {
@@ -26,9 +34,12 @@ const getCurve = (iterations) => {
 }
 
 const draw = (iterations, isCircle) => {
+
+    stop = false;
+
     // Use the identity matrix while clearing the canvas
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    //ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.translate(startX, startY)
     ctx.rotate(-iterations * Math.PI / 4)
 
@@ -40,18 +51,18 @@ const draw = (iterations, isCircle) => {
     ctx.moveTo(0, 0)
     ctx.lineTo(lineSize, 0)
     ctx.translate(lineSize, 0)
-    
+
     if (isCircle) drawCurves(curve, lineSize, 0)()
     else drawLines(curve, lineSize, 0)();
 }
 
 const drawLines = (curve, lineSize, index) => () => {
-    
+
     if (index >= curve.length) {
         ctx.stroke()
         return
     }
-    
+
     const batchLength = Math.ceil(curve.length / 60)
     const nextStep = Math.min(curve.length, index + batchLength)
     for (let i = index; i < nextStep; i++) {
@@ -75,6 +86,17 @@ const drawCurves = (curve, radius, index) => () => {
     const batchLength = Math.ceil(curve.length / 60)
     const nextStep = Math.min(curve.length, index + batchLength)
     for (let i = index; i < nextStep; i++) {
+
+        // -------------------- CLOUD EFFET
+        if (cloudEffect) {
+            const red = 200 * (i / curve.length)
+            const green = 80 + (150 * i / curve.length)
+            ctx.strokeStyle = `rgb(${red},${green},255)`
+            ctx.stroke()
+            ctx.beginPath()
+        }
+        // -------------------- CLOUD EFFET
+
         ctx.moveTo(0, 0)
         if (curve[i] === 1) {
             ctx.arc(0, radius, radius, -Math.PI / 2, 0, false)
@@ -90,6 +112,7 @@ const drawCurves = (curve, radius, index) => () => {
 }
 
 const drawNext = (animate, drawFunction) => {
+    if (stop) return
     if (animate) {
         ctx.stroke()
         window.requestAnimationFrame(drawFunction);
@@ -121,10 +144,20 @@ const updateLevel = (newLevel) => {
 }
 const changeAnimate = (event) => {
     animate = event.target.checked
-    console.log(event, event.target.checked, animate)
+}
+const setStop = () => {
+    stop = true
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 // Affichage du niveau
 updateLevel(1)
 // Affichage de la courbe N1
-draw(1, false)
+cloudEffect = true
+draw(16, true)
+// cloudEffect = false
+// ctx.strokeStyle = '#05AA05';
+// ctx.lineWidth = 2;
+// draw(9, true)
