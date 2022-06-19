@@ -1,13 +1,27 @@
 <!DOCTYPE html>
-<canvas id="myCanvas" width="2000" height="1500" style="border: 1px solid;"></canvas><br />
-<div style="position: absolute; top: 10px; left: 10px;">
-    Dessiner des linges : <button onclick="javascript:plusL()">plus lignes</button>
-    <button onclick="javascript:moinsL()">moins lignes</button><br />
-    Dessiner des courbes : <button onclick="javascript:plusC()">plus cercles</button>
-    <button onclick="javascript:moinsC()">moins cercles</button><br />
-    <input id="animate" type="checkbox" name="animate" onchange="javascript:changeAnimate(event)" />
-    <label for="animate">Animer la courbe</label><br />
-    <span id="niveau"></span>
-    <button onclick="javascript:setStop()">STOP</button>
+<canvas
+  id="myCanvas"
+  width="2000"
+  height="1500"
+  style="border: 1px solid"
+></canvas
+><br />
+<div style="position: absolute; top: 10px; left: 10px">
+  Dessiner des linges :
+  <button onclick="javascript:plusL()">plus lignes</button>
+  <button onclick="javascript:moinsL()">moins lignes</button><br />
+  Dessiner des courbes :
+  <button onclick="javascript:plusC()">plus cercles</button>
+  <button onclick="javascript:moinsC()">moins cercles</button><br />
+  <input
+    id="animate"
+    type="checkbox"
+    name="animate"
+    checked
+    onchange="javascript:changeAnimate(event)"
+  />
+  <label for="animate">Animer la courbe</label><br />
+  <span id="niveau"></span>
+  <button onclick="javascript:setStop()">STOP</button>
 </div>
 <script src="dragonCurve.js"></script>
